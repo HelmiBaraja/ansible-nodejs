@@ -1,0 +1,84 @@
+---
+# tasks file for nodejs
+
+   - name: copy nodejs from remote machine
+     copy: src="{{ item }}"  dest="{{temp_path}}"
+     tags: install
+     register: copy_assets
+     with_items:
+     - "node-{{ nodejs_version }}.rpm"
+     - "npmbox-{{ npmbox_version}}.npmbox"
+     - "pm2-{{ pm2_version }}.npmbox"
+     - "express-{{ express_version }}.npmbox"
+     - "pm2_install.sh"
+     - "pm2_run.sh"
+
+   - name: Get npm installed version
+     command: npm -v
+     changed_when: false
+     failed_when: false
+     check_mode: no
+     register: npm_installed_version
+  
+   - name: install nodeJS rpm from a local file
+     yum: name="{{temp_path}}/node-{{nodejs_version}}.rpm" state=present
+     tags: install
+     register: install_nodejs
+     when: npm_installed_version|failed
+
+   - name: clear cache 
+     command: npm cache clear
+     tags: install 
+     ignore_errors: true
+
+   - name: Get npmbox installed version
+     command: npmbox -v
+     changed_when: false
+     failed_when: false
+     check_mode: no
+     register: npmbox_installed_version
+
+   - name : Unarchive npmbox
+     unarchive: src="{{temp_path}}/npmbox-{{ npmbox_version}}.npmbox" dest="{{temp_path}}" remote_src=true
+     tags: install
+     register: unarchive_npmbox
+     when: npmbox_installed_version|failed
+
+   - name: Install npmbox
+     command: npm install --global --cache ./.npmbox.cache --optional --cache-min 99999999999 --shrinkwrap false npmbox chdir="{{temp_path}}"
+     tags: install
+     register: install_npmbox
+     when: npmbox_installed_version|failed
+
+   - name: deploy code
+     copy: src="{{playbook_dir}}/src" dest="{{dest_path}}"
+     tags: deploy,build
+     register: pull_code
+
+   - name: Get pm2 installed version
+     command: pm2 -v
+     changed_when: false
+     failed_when: false
+     check_mode: no
+     register: pm2_installed_version
+
+   - name: Install pm2 
+     command: npmunbox -g pm2-{{pm2_version}}.npmbox chdir="{{temp_path}}"
+     tags: install
+     register: install_pm2
+     when: npmbox_installed_version|failed
+
+   - name: Start NodeJS
+     command: pm2 start processes.json chdir="{{dest_path}}/src"
+     tags: install
+
+   - name: Install express 
+     command: npmunbox --save express-{{ express_version }}.npmbox chdir="{{temp_path}}"
+     tags: build
+
+   - name: Reload NodeJS
+     command: pm2 reload all chdir="{{dest_path}}/src"
+     register: deployed_nodeJS
+     tags: deploy
+
+
