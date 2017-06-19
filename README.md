@@ -26,11 +26,14 @@ Example Playbook
 - Command 
 `ansible-playbook -i <hosts> <yaml file>`
 
-- sample, Install all url to install nodejs
-ansible-playbook -i hosts site.yml
+- sample, Install all url to install and deploy nodejs
+`ansible-playbook -i hosts site.yml`
+
+ sample, Install all url to install only
+`ansible-playbook -i hosts site.yml --tags "deploy`
 
 - To deploy new code
-ansible-playbook -i hosts site.yml --tags "deploy"
+`ansible-playbook -i hosts site.yml --tags "deploy"`
 
 License
 -------
