@@ -29,7 +29,7 @@ Example Playbook
 - sample, Install all url to install and deploy nodejs
 `ansible-playbook -i hosts site.yml`
 
- sample, Install all url to install only
+- Sample, Install all url to install only
 `ansible-playbook -i hosts site.yml --tags "deploy`
 
 - To deploy new code
