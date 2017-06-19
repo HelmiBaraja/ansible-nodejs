@@ -1,0 +1,20 @@
+---
+
+- name: Get npm installed version
+  command: npm -v
+  changed_when: false
+  failed_when: false
+  check_mode: no
+  register: npm_installed_version
+
+- name: install nodeJS rpm from a local file
+  yum: name="{{temp_path}}/node-{{nodejs_version}}.rpm" state=present
+  tags: install
+  register: install_nodejs
+  when: npm_installed_version|failed
+
+# npm will try to fetch internet. occuring bug. to fix, clear cache 
+- name: clear cache 
+  command: npm cache clear
+  tags: install 
+  ignore_errors: true

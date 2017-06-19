@@ -1,0 +1,13 @@
+---
+
+- name: Get pm2 installed version
+  command: pm2 -v
+  changed_when: false
+  failed_when: false
+  check_mode: no
+  register: pm2_installed_version
+
+- name: Install pm2 
+  command: npmunbox -g pm2-{{pm2_version}}.npmbox chdir="{{temp_path}}"
+  register: install_pm2
+  when: npmbox_installed_version|failed

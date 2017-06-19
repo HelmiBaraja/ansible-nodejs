@@ -1,0 +1,20 @@
+---
+
+- name: Get npmbox installed version
+  command: npmbox -v
+  changed_when: false
+  failed_when: false
+  check_mode: no
+  register: npmbox_installed_version
+
+- name : Unarchive npmbox
+  unarchive: src="{{temp_path}}/npmbox-{{ npmbox_version}}.npmbox" dest="{{temp_path}}" remote_src=true
+  tags: install
+  register: unarchive_npmbox
+  when: npmbox_installed_version|failed
+
+- name: Install npmbox
+  command: npm install --global --cache ./.npmbox.cache --optional --cache-min 99999999999 --shrinkwrap false npmbox chdir="{{temp_path}}"
+  tags: install
+  register: install_npmbox
+  when: npmbox_installed_version|failed
