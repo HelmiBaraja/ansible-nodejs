@@ -13,6 +13,6 @@
   tags: reload
 
 - name: Restart NodeJS
-  command: pm2 restart {{ dest_path }}/src/{{ pm2_server }}
+  command: pm2 restart {{ pm2_server }} chdir="{{ dest_path }}/src"
   when: pm2_reload|failed
   tags: restart

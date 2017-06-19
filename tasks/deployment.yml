@@ -20,13 +20,16 @@
   register: unarchive_sourcecode
   when: copy_binary|succeeded
 
+# failed when pm2 haven't started yet. so for this purpose, ignore it. 
 - name: Reload NodeJS
   command: pm2 reload all
   register: pm2_reload
-  failed_when: pm2_reload.stdout.find('No process found') == 1
+  failed_when: false
+  changed_when: false
 
-- name: Restart NodeJS
-  command: pm2 start {{ dest_path }}/src/{{ pm2_server }}
-  when: pm2_reload|failed
+# it will start if reload failed. 
+- name: Restart NodeJS with cluster mode
+  command: pm2 start server.js -i 0 chdir={{ dest_path }}/src
+  register: restart_pm2
+  when: not pm2_reload|succeeded
 
-- debug: msg= {{pm2_reload.stdout}}
