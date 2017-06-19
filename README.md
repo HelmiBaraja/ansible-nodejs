@@ -1,12 +1,14 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+nodejs
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+This is tested using vagrant and VMWare running on RHEL 7.4
+
+ansible 2.2
 
 Role Variables
 --------------
@@ -21,11 +23,14 @@ N/A
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+- Command 
+`ansible-playbook -i <hosts> <yaml file>`
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+- sample, Install all url to install nodejs
+ansible-playbook -i hosts site.yml
+
+- To deploy new code
+ansible-playbook -i hosts site.yml --tags "deploy"
 
 License
 -------
