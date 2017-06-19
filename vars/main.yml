@@ -3,10 +3,11 @@
 http_port: 8501
 https_port: 8443
 
-temp_path: "/root/temp/"
+temp_path: "/root/temp"
 dest_path: "/root/dest"
-local_assets: "{{playbook_dir}}/assets"
-
+source_code: "src.zip" 
+pm2_server: "processes.json"
+nodejs_server: "server.js"
 
 nodejs_version: "v6.11.0"
 pm2_version: "v2.5.0"

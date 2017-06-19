@@ -1,0 +1,32 @@
+---
+
+- name: Clean binary to replace new one
+  file: state=absent path="{{ item }}"
+  with_items:
+    - "{{dest_path}}"
+    - "{{temp_path}}/{{source_code}}"
+  register: clean_binary
+
+- name: copy binary
+  copy: src="{{ source_code }}"  dest="{{temp_path}}"
+  register: copy_binary
+  when: clean_binary|succeeded
+
+- name: Creates dest directory for dest folder
+  file: path={{ dest_path }} state=directory
+
+- name : Unarchive source code
+  unarchive: src="{{temp_path}}/{{source_code}}" dest="{{dest_path}}" remote_src=true
+  register: unarchive_sourcecode
+  when: copy_binary|succeeded
+
+- name: Reload NodeJS
+  command: pm2 reload all
+  register: pm2_reload
+  failed_when: pm2_reload.stdout.find('No process found') == 1
+
+- name: Restart NodeJS
+  command: pm2 start {{ dest_path }}/src/{{ pm2_server }}
+  when: pm2_reload|failed
+
+- debug: msg= {{pm2_reload.stdout}}
