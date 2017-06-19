@@ -1,0 +1,11 @@
+---
+
+- name: copy nodejs from remote machine
+  copy: src="{{ item }}"  dest="{{temp_path}}"
+  tags: install
+  register: copy_assets
+  with_items:
+  - "node-{{ nodejs_version }}.rpm"
+  - "npmbox-{{ npmbox_version}}.npmbox"
+  - "pm2-{{ pm2_version }}.npmbox"
+  - "express-{{ express_version }}.npmbox"

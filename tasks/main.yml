@@ -1,33 +1,34 @@
 ---
 
 - include: "installer.yml"
-    tags: install
+  static: yes
+  tags: install
 
 - include: "nodejs.yml"
-    tags: install
+  tags: install
 
 - include: "npmbox.yml"
-    tags: install
+  tags: install
 
 - include: "pm2.yml"
-    tags: install
+  tags: install
 
 - include: "npm_packages.yml"
-    tags: build
+  tags: build
    
 
 - name: deploy code
-    copy: src="{{playbook_dir}}/src" dest="{{dest_path}}"
-    tags: deploy,build
-    register: pull_code
+  copy: src="{{playbook_dir}}/src" dest="{{dest_path}}"
+  tags: deploy,build
+  register: pull_code
 
 - name: Start NodeJS
-    command: pm2 start processes.json chdir="{{dest_path}}/src"
-    tags: install
+  command: pm2 start processes.json chdir="{{dest_path}}/src"
+  tags: install
 
 - name: Reload NodeJS
-    command: pm2 reload all chdir="{{dest_path}}/src"
-    register: deployed_nodeJS
-    tags: deploy
+  command: pm2 reload all chdir="{{dest_path}}/src"
+  register: deployed_nodeJS
+  tags: deploy
 
 
